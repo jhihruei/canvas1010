@@ -29,6 +29,7 @@
       // 在這裡寫 js code
       onload = function () {
         var blocks =[];
+        var items = [];
         var score = 0;
         var ctx = document.getElementById("myCanvas").getContext("2d");
         
@@ -43,12 +44,18 @@
           };
         };
         blocks[5].color = "#123456";
-        blocks[15].color = "#123456";
-        blocks[16].color = "#123456";
+        //blocks[15].color = "#123456";
+        //blocks[16].color = "#123456";
         blocks.forEach(function(){
           this.paint();
         });
-        
+        for (var i = 0; i<1 ; i++){
+          var item = new Item(550,50);
+          items.push(item); 
+        };
+        items.forEach(function(){
+          this.paint();
+        });
       }
         
       Array.prototype.forEach = function(callback){
@@ -63,10 +70,91 @@
         this.empty = true;
         this.color = "#FFFFFF";
       }
-      var Item = function (){
+      var Item = function (x, y){
         this.x = x;
         this.y = y;
-        this.type = Math.rand()%6;
+        this.blockType = Math.floor(Math.random()*19);
+        console.log(this.blockType);
+        switch (this.blockType) {
+          case 0:
+            this.color = "#000088";
+            this.pic = new Array(12);
+            break;
+          case 1:
+            this.color = "#FFCC22";
+            this.pic = new Array(12,13);
+            break;
+          case 2:
+            this.color = "#FF8800";
+            this.pic = new Array(11,12,13);
+            break;
+          case 3:
+            this.color = "#FF44AA";
+            this.pic = new Array(11,12,13,14);
+            break;
+          case 4:
+            this.color = "#C63300";
+            this.pic = new Array(10,11,12,13,14);
+            break;
+          case 5:
+            this.color = "#7700BB";
+            this.pic = new Array(7,12,13);
+            break;
+          case 6:
+            this.color = "#7700BB";
+            this.pic = new Array(7,12,11);
+            break;
+          case 7:
+            this.color = "#7700BB";
+            this.pic = new Array(11,12,17);
+            break;
+          case 8:
+            this.color = "#7700BB";
+            this.pic = new Array(12,13,17);
+            break;
+          case 9:
+            this.color = "#00FF00";
+            this.pic = new Array(6,7,11,12);
+            break;
+          case 10:
+            this.color = "#5599FF";
+            this.pic = new Array(2,7,12,13,14);
+            break;
+          case 11:
+            this.color = "#5599FF";
+            this.pic = new Array(2,7,12,11,10);
+            break;
+          case 12:
+            this.color = "#5599FF";
+            this.pic = new Array(10,11,12,17,22);
+            break;
+          case 13:
+            this.color = "#5599FF";
+            this.pic = new Array(14,13,12,17,22);
+            break;
+          case 14:
+            this.color = "#77FFEE";
+            this.pic = new Array(6,7,8,11,12,13,16,17,18);
+            break;
+          case 15:
+            this.color = "#FFCC22";
+            this.pic = new Array(7,12);
+            break;
+          case 16:
+            this.color = "#FF8800";
+            this.pic = new Array(7,12,17);
+            break;
+          case 17:
+            this.color = "#FF44AA";
+            this.pic = new Array(2,7,12,17);
+            break;
+          case 18:
+            this.color = "#C63300";
+            this.pic = new Array(2,7,12,17,22);
+            break;
+
+        }
+        
         this.draggable = true;
       }
       Block.prototype = {
@@ -85,10 +173,18 @@
           var ctx = document.getElementById("myCanvas").getContext("2d");
           ctx.save();
           ctx.beginPath();
-          ctx.rect(this.x , this.y , 38 , 38);
+          for (var i=0; i< this.pic.length;i++){
+            ctx.rect(this.x+(this.pic[i]%5-2)*40 , this.y+Math.floor((this.pic[i])/5)*40, 38 , 38);
+            console.log(this.pic.length);
+            console.log(this.x+this.pic[i]%10*40);
+            console.log(this.y+Math.floor((this.pic[i]+5)/10)*40);
+          };
           ctx.fillStyle=this.color;
           ctx.fill();
           ctx.restore();
+        },
+        addr:function() {
+          var addrX = Array()
         },
       }
 
