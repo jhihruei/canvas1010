@@ -29,11 +29,13 @@
       //global value
       var blocks =[]; //blocks stack
       var items = []; 
+      var iToB = [];
       var score = 0;
       var mouse_press; // boolean
       var mousePos; //mouse xy
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
+
       // 在這裡寫 js code
       onload = function () {
         for (var y = 0; y < 10 ; y++ ) {
@@ -50,6 +52,7 @@
         items.forEach(function(){
           this.paint();
         });
+        setItemToBlock();
       }
       function drawBlocks() { //draw main game area
         ctx.beginPath();
@@ -61,6 +64,22 @@
           this.paint();
         });
       }
+      function setItemToBlock() {
+        iToB[2] = -20;
+        iToB[6] = -11;
+        iToB[7] = -10;
+        iToB[8] = -9;
+        iToB[10] = -2;
+        iToB[11] = -1;
+        iToB[12] = 0;
+        iToB[13] = 1;
+        iToB[14] = 2;
+        iToB[16] = 9;
+        iToB[17] = 10;
+        iToB[18] = 11;
+        iToB[22] = 20;
+      }
+
       function getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
         return {
@@ -86,8 +105,63 @@
       canvas.addEventListener("mouseup",function (evt) {
         mouse_press = false;
         mousePos = getMousePos(canvas, evt);
+        var cleanLine = 0;
+        if ( items[0].check(mousePos.x,mousePos.y) ){
+          var blockCenter = Math.floor((mousePos.x-50)/40)+Math.floor((mousePos.y-20)/40)*10;
+          console.log("blocks null");
+          for (var i=0; i< items[0].pic.length;i++){
+            var blockID = blockCenter+ iToB[items[0].pic[i]];
+            blocks[blockID].color = items[0].color;
+            blocks[blockID].empty = false;
+          };
+          var xLine ;
+          var yLine ;
+          var lineStack = [];
+          for (var i = 0; i < 10 ; i++) {
+            var xLine = true;
+            var yLine = true;
+            for (var j = 0; j< 10; j++) {
+              if(blocks[i*10+j].empty)
+                xLine = false;
+              if(blocks[i+j*10].empty)
+                yLine = false;
+            }
+            if (xLine)
+              lineStack.push(0+i);
+            if (yLine)
+              lineStack.push(10+i);
+          }
+          clean(lineStack);
+          items.pop();
+          item = new Item(550,50);
+          items.push(item); 
+          drawBlocks();
+          items[0].paint();
+        }
+        else {
+          items[0].reset();
+        } 
       });
-
+      function clean(lineStack) {
+        console.log(lineStack);
+        for (var i =0;i < lineStack.length ;i++) {
+          console.log("lineStack = " +lineStack[i]);
+          if(lineStack[i]<10){
+            x = lineStack[i];
+            for(var j = 0;j<10;j++) {
+              blocks[x*10+j].empty = true;
+              blocks[x*10+j].color = "white";
+            }
+          }
+          else {
+            y = lineStack[i]-10;
+            for(var j = 0;j<10;j++) {
+              blocks[y+j*10].empty = true;
+              blocks[y+j*10].color = "white";
+            } 
+          }
+        }
+      }
 
       Array.prototype.forEach = function(callback){
         for(var i=0;i<this.length;i++){
@@ -99,7 +173,7 @@
         this.x = x;
         this.y = y;
         this.empty = true;
-        this.color = "#FFFFFF";
+        this.color = "white";
       }
       var Item = function (x, y){
         this.x = x;
@@ -187,6 +261,7 @@
 
         }
       }
+
       Block.prototype = {
         paint:function() {
           ctx.save();
@@ -220,7 +295,7 @@
           for (var i=0; i< this.pic.length;i++){
             ctx.rect(this.oldx+(this.pic[i]%5-2)*40 , this.oldy+Math.floor((this.pic[i])/5)*40, 38 , 38);
           };
-          ctx.fillStyle="#FFFFFF"; //white
+          ctx.fillStyle="white";
           ctx.fill();
           drawBlocks();
           ctx.beginPath();
@@ -230,8 +305,49 @@
           ctx.fillStyle=this.color;
           ctx.fill();
           ctx.restore();
-          
+        },reset:function() {
+          this.oldx = this.x;
+          this.oldy = this.y;
+          this.x = this.iniX;
+          this.y = this.iniY;
+          ctx.save();
+          ctx.beginPath();
+          for (var i=0; i< this.pic.length;i++){
+            ctx.rect(this.oldx+(this.pic[i]%5-2)*40 , this.oldy+Math.floor((this.pic[i])/5)*40, 38 , 38);
+          };
+          ctx.fillStyle="white";
+          ctx.fill();
+          drawBlocks();
+          ctx.beginPath();
+          for (var i=0; i< this.pic.length;i++){
+            ctx.rect(this.iniX+(this.pic[i]%5-2)*40 , this.iniY+Math.floor((this.pic[i])/5)*40, 38 , 38);
+          };
+          ctx.fillStyle=this.color;
+          ctx.fill();
+          ctx.restore();
         },
+        check:function(x, y) { 
+          var empty = true;
+          if( x< 50 || x >450)
+            return false;
+          if( y<20 || y > 420)
+            return false;
+          var blockCenter = Math.floor((x-50)/40)+Math.floor((y-20)/40)*10;
+          for (var i=0; i< this.pic.length;i++){
+            var blockID = blockCenter+ iToB[this.pic[i]];
+            if(blockID >= 0 && blockID <100) {
+              if ( !blocks[blockID].empty) {
+                empty = false;
+              }
+              else 
+                console.log(blockID + "is empty");
+            }
+            else
+              empty =false;
+          };
+          console.log("check");
+          return empty;
+        }
       }
 
     </script>
