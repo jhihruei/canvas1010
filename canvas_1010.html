@@ -26,29 +26,23 @@
       
     </div>
     <script>
+      //global value
+      var blocks =[]; //blocks stack
+      var items = []; 
+      var score = 0;
+      var mouse_press; // boolean
+      var mousePos; //mouse xy
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
       // 在這裡寫 js code
       onload = function () {
-        var blocks =[];
-        var items = [];
-        var score = 0;
-        var ctx = document.getElementById("myCanvas").getContext("2d");
-        
-        ctx.lineWidth="2";
-        ctx.rect(50,20,402,402);
-        ctx.fillStyle="#8E8E8E";
-        ctx.fill();
         for (var y = 0; y < 10 ; y++ ) {
           for (var x = 0; x < 10 ; x++ ) {
             var block = new Block( 52+40*x , 22+40*y);
             blocks.push(block);
           };
         };
-        blocks[5].color = "#123456";
-        //blocks[15].color = "#123456";
-        //blocks[16].color = "#123456";
-        blocks.forEach(function(){
-          this.paint();
-        });
+        drawBlocks(); 
         for (var i = 0; i<1 ; i++){
           var item = new Item(550,50);
           items.push(item); 
@@ -57,7 +51,16 @@
           this.paint();
         });
       }
-        
+      function drawBlocks() { //draw main game area
+        ctx.beginPath();
+        ctx.lineWidth="2";
+        ctx.rect(50,20,402,402);
+        ctx.fillStyle="#8E8E8E";
+        ctx.fill();
+        blocks.forEach(function(){
+          this.paint();
+        });
+      }
       Array.prototype.forEach = function(callback){
         for(var i=0;i<this.length;i++){
           callback.call(this[i]);
@@ -159,7 +162,6 @@
       }
       Block.prototype = {
         paint:function() {
-          var ctx = document.getElementById("myCanvas").getContext("2d");
           ctx.save();
           ctx.beginPath();
           ctx.rect(this.x , this.y , 38 , 38);
@@ -182,9 +184,6 @@
           ctx.fillStyle=this.color;
           ctx.fill();
           ctx.restore();
-        },
-        addr:function() {
-          var addrX = Array()
         },
       }
 
