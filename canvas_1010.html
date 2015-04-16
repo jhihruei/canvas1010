@@ -61,6 +61,34 @@
           this.paint();
         });
       }
+      function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
+
+      canvas.addEventListener("mousedown",function (evt) {
+        mousePos = getMousePos(canvas, evt);
+        press_mouse_x = mousePos.x;
+        press_mouse_y = mousePos.y;
+        mouse_press = true ;
+        console.log(press_mouse_x);
+        console.log(press_mouse_y);
+      });
+      canvas.addEventListener("mousemove",function (evt) {
+        if(mouse_press) {
+          mousePos = getMousePos(canvas, evt);
+          items[0].move(mousePos.x,mousePos.y);
+        }      
+      });
+      canvas.addEventListener("mouseup",function (evt) {
+        mouse_press = false;
+        mousePos = getMousePos(canvas, evt);
+      });
+
+
       Array.prototype.forEach = function(callback){
         for(var i=0;i<this.length;i++){
           callback.call(this[i]);
@@ -78,87 +106,86 @@
         this.y = y;
         this.blockType = Math.floor(Math.random()*19);
         console.log(this.blockType);
+        var picColor = Array("#000088", "#FFCC22", "#FF8800", "#FF44AA", "#C63300", "#7700BB", "#00FF00", "#5599FF", "#77FFEE");
         switch (this.blockType) {
           case 0:
-            this.color = "#000088";
+            this.color = picColor[0];
             this.pic = new Array(12);
             break;
           case 1:
-            this.color = "#FFCC22";
+            this.color = picColor[1];
             this.pic = new Array(12,13);
             break;
           case 2:
-            this.color = "#FF8800";
+            this.color = picColor[2];
             this.pic = new Array(11,12,13);
             break;
           case 3:
-            this.color = "#FF44AA";
+            this.color = picColor[3];
             this.pic = new Array(11,12,13,14);
             break;
           case 4:
-            this.color = "#C63300";
+            this.color = picColor[4];
             this.pic = new Array(10,11,12,13,14);
             break;
           case 5:
-            this.color = "#7700BB";
+            this.color = picColor[5];
             this.pic = new Array(7,12,13);
             break;
           case 6:
-            this.color = "#7700BB";
+            this.color = picColor[5];
             this.pic = new Array(7,12,11);
             break;
           case 7:
-            this.color = "#7700BB";
+            this.color = picColor[5];
             this.pic = new Array(11,12,17);
             break;
           case 8:
-            this.color = "#7700BB";
+            this.color = picColor[5];
             this.pic = new Array(12,13,17);
             break;
           case 9:
-            this.color = "#00FF00";
+            this.color = picColor[6];
             this.pic = new Array(6,7,11,12);
             break;
           case 10:
-            this.color = "#5599FF";
+            this.color = picColor[7];
             this.pic = new Array(2,7,12,13,14);
             break;
           case 11:
-            this.color = "#5599FF";
+            this.color = picColor[7];
             this.pic = new Array(2,7,12,11,10);
             break;
           case 12:
-            this.color = "#5599FF";
+            this.color = picColor[7];
             this.pic = new Array(10,11,12,17,22);
             break;
           case 13:
-            this.color = "#5599FF";
+            this.color = picColor[7];
             this.pic = new Array(14,13,12,17,22);
             break;
           case 14:
-            this.color = "#77FFEE";
+            this.color = picColor[8];
             this.pic = new Array(6,7,8,11,12,13,16,17,18);
             break;
           case 15:
-            this.color = "#FFCC22";
+            this.color = picColor[1];
             this.pic = new Array(7,12);
             break;
           case 16:
-            this.color = "#FF8800";
+            this.color = picColor[2];
             this.pic = new Array(7,12,17);
             break;
           case 17:
-            this.color = "#FF44AA";
+            this.color = picColor[3];
             this.pic = new Array(2,7,12,17);
             break;
           case 18:
-            this.color = "#C63300";
+            this.color = picColor[4];
             this.pic = new Array(2,7,12,17,22);
             break;
 
         }
-        
-        this.draggable = true;
       }
       Block.prototype = {
         paint:function() {
@@ -172,7 +199,6 @@
       }
       Item.prototype = {
         paint:function() {
-          var ctx = document.getElementById("myCanvas").getContext("2d");
           ctx.save();
           ctx.beginPath();
           for (var i=0; i< this.pic.length;i++){
@@ -184,6 +210,27 @@
           ctx.fillStyle=this.color;
           ctx.fill();
           ctx.restore();
+        },move:function(x, y) { 
+          this.oldx = this.x;
+          this.oldy = this.y;
+          this.x = x-20;
+          this.y = y-100;
+          ctx.save();
+          ctx.beginPath();
+          for (var i=0; i< this.pic.length;i++){
+            ctx.rect(this.oldx+(this.pic[i]%5-2)*40 , this.oldy+Math.floor((this.pic[i])/5)*40, 38 , 38);
+          };
+          ctx.fillStyle="#FFFFFF"; //white
+          ctx.fill();
+          drawBlocks();
+          ctx.beginPath();
+          for (var i=0; i< this.pic.length;i++){
+            ctx.rect(x+(this.pic[i]%5-2)*40-20 , y+Math.floor((this.pic[i])/5)*40-100, 38 , 38);
+          };
+          ctx.fillStyle=this.color;
+          ctx.fill();
+          ctx.restore();
+          
         },
       }
 
